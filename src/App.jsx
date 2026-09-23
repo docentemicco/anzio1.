@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import schoolLogo from './images (1).jpg';
 import {
   Shield,
   ShieldAlert,
@@ -291,9 +292,15 @@ export default function App() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
             
             <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center p-2 shadow-inner text-amber-300">
-                <School className="w-8 h-8" />
+              {/* LOGO UFFICIALE ISTITUTO COMPRENSIVO ANZIO 1 */}
+              <div className="w-12 h-12 rounded-xl bg-white p-1 border border-white/30 flex items-center justify-center shadow-md overflow-hidden flex-shrink-0">
+                <img 
+                  src={schoolLogo} 
+                  alt="Logo Istituto Comprensivo Anzio 1" 
+                  className="w-full h-full object-contain"
+                />
               </div>
+
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs uppercase tracking-wider font-semibold text-blue-200">
@@ -1610,7 +1617,7 @@ function TeacherDashboardView({
         </div>
       )}
 
-      {/* Versione per la stampa */}
+      {/* Stampa */}
       <div className="hidden print:block print:p-4 text-slate-900 bg-white">
         <div className="border-b-2 border-black pb-3 mb-4 flex justify-between items-center">
           <div>

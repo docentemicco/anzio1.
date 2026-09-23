@@ -21,7 +21,7 @@ import {
   Phone,
   CheckCircle2,
   Clock,
-  IdCard,
+  CreditCard,
   Eye,
   Info,
   Calendar,
@@ -197,10 +197,9 @@ const CAMPUSES = [
 const CLASSES = ["1A", "1B", "1C", "2A", "2B", "3A", "3B", "3C", "Infanzia Sez. Gialla", "Infanzia Sez. Blu"];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('parent'); // 'parent' | 'teacher_login' | 'teacher_dashboard'
+  const [activeTab, setActiveTab] = useState('parent');
   const [studentsList, setStudentsList] = useState(INITIAL_STUDENTS);
 
-  // Authentication State for Teachers
   const [teacherAuth, setTeacherAuth] = useState({
     isAuthenticated: false,
     teacherName: "Docente Coordinatore",
@@ -210,15 +209,13 @@ export default function App() {
   const [loginCode, setLoginCode] = useState("");
   const [loginError, setLoginError] = useState("");
 
-  // Filters for Teacher Dashboard
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClass, setSelectedClass] = useState("all");
   const [selectedCampus, setSelectedCampus] = useState("all");
-  const [filterType, setFilterType] = useState("all"); // 'all' | 'only_delegates' | 'allergies' | 'severe' | 'meds'
+  const [filterType, setFilterType] = useState("all");
   const [selectedStudentForModal, setSelectedStudentForModal] = useState(null);
   const [isPickupQuickMode, setIsPickupQuickMode] = useState(false);
 
-  // Notification Banner
   const [feedbackMessage, setFeedbackMessage] = useState(null);
 
   const showNotification = (msg, type = "success") => {
@@ -478,10 +475,9 @@ export default function App() {
 }
 
 /* =========================================================================
-   PARENT SUBMISSION COMPONENT - CON SEZIONI FACOLTATIVE SMART
+   PARENT SUBMISSION COMPONENT
    ========================================================================= */
 function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
-  // Obbligatori: Solo dati anagrafici base
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -494,12 +490,10 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
     privacyAccepted: true
   });
 
-  // Toggles Sezioni Facoltative
   const [hasAllergies, setHasAllergies] = useState(false);
   const [hasMedications, setHasMedications] = useState(false);
   const [hasDelegates, setHasDelegates] = useState(false);
 
-  // Dynamic Allergies List
   const [allergies, setAllergies] = useState([]);
   const [currentAllergy, setCurrentAllergy] = useState({
     type: "Alimentare",
@@ -508,7 +502,6 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
     emergencyPlan: ""
   });
 
-  // Dynamic Medications List
   const [medications, setMedications] = useState([]);
   const [currentMed, setCurrentMed] = useState({
     name: "",
@@ -517,14 +510,12 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
     notes: ""
   });
 
-  // Dynamic Delegates List (opzionale, vuota o con elementi)
   const [delegates, setDelegates] = useState([]);
 
   const [validationError, setValidationError] = useState("");
   const [showSuccessCard, setShowSuccessCard] = useState(false);
   const [lastSubmittedStudent, setLastSubmittedStudent] = useState(null);
 
-  // Add Allergy
   const handleAddAllergy = () => {
     if (!currentAllergy.substance.trim()) {
       setValidationError("Inserisci il nome della sostanza o alimento prima di aggiungerlo.");
@@ -544,7 +535,6 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
     setAllergies(allergies.filter(a => a.id !== id));
   };
 
-  // Add Medication
   const handleAddMedication = () => {
     if (!currentMed.name.trim()) {
       setValidationError("Specifica il nome del farmaco prima di aggiungerlo.");
@@ -564,7 +554,6 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
     setMedications(medications.filter(m => m.id !== id));
   };
 
-  // Add Delegate
   const handleAddDelegate = () => {
     setDelegates([
       ...delegates,
@@ -588,7 +577,6 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
     setDelegates(delegates.map(d => (d.id === id ? { ...d, [field]: value } : d)));
   };
 
-  // Toggle handlers con auto-inizializzazione utile
   const handleToggleDelegates = (enabled) => {
     setHasDelegates(enabled);
     if (enabled && delegates.length === 0) {
@@ -596,17 +584,14 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
     }
   };
 
-  // Submit complete record
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validazione SOLO dei campi obbligatori essenziali
     if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.parentName.trim() || !formData.parentPhone.trim()) {
       setValidationError("Compilare i dati anagrafici obbligatori dello studente e il recapito del genitore (contrassegnati con *).");
       return;
     }
 
-    // Se ha attivato le allergie ma non ne ha aggiunta nessuna
     if (hasAllergies && allergies.length === 0) {
       if (currentAllergy.substance.trim()) {
         allergies.push({ ...currentAllergy, id: "alg-" + Date.now() });
@@ -616,7 +601,6 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
       }
     }
 
-    // Se ha attivato i farmaci ma non ne ha aggiunti
     if (hasMedications && medications.length === 0) {
       if (currentMed.name.trim()) {
         medications.push({ ...currentMed, id: "med-" + Date.now(), doctorAuth: true });
@@ -626,7 +610,6 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
       }
     }
 
-    // Se ha attivato le deleghe, controlla che quelle compilate abbiano i dati minimi (Nome, Cognome, Carta d'Identità)
     if (hasDelegates) {
       if (delegates.length === 0) {
         setValidationError("Hai selezionato di voler aggiungere delegati: inserisci almeno un nominativo o disattiva la sezione.");
@@ -755,7 +738,6 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Intro Banner */}
       <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white rounded-2xl p-6 shadow-sm border border-blue-800">
         <div className="flex items-start gap-4">
           <div className="p-3 bg-white/10 rounded-xl">
@@ -779,7 +761,7 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         
-        {/* SEZIONE 1: Dati Obbligatori Alunno & Genitore */}
+        {/* SEZIONE 1 */}
         <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
           <div className="flex items-center gap-2.5 pb-4 mb-4 border-b border-slate-100 text-blue-950 font-bold">
             <School className="w-5 h-5 text-blue-700" />
@@ -903,7 +885,7 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
           </div>
         </div>
 
-        {/* SEZIONE 2: Allergie e Intolleranze (FACOLTATIVA CON SWITCH) */}
+        {/* SEZIONE 2: Allergie */}
         <div className={`rounded-2xl border transition-all p-6 ${hasAllergies ? 'bg-white border-amber-300 shadow-sm' : 'bg-slate-50/70 border-slate-200'}`}>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
             <div className="flex items-center gap-2.5">
@@ -934,7 +916,6 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
 
           {hasAllergies ? (
             <div className="mt-4 space-y-4">
-              {/* Existing Allergies list */}
               {allergies.length > 0 && (
                 <div className="space-y-2">
                   {allergies.map(alg => (
@@ -974,7 +955,6 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
                 </div>
               )}
 
-              {/* Add Allergy Box */}
               <div className="bg-amber-50/40 p-4 rounded-xl border border-amber-200 space-y-3">
                 <span className="text-xs font-bold text-slate-700 flex items-center gap-1">
                   <Plus className="w-4 h-4 text-amber-600" /> Aggiungi sostanza o allergene
@@ -1052,7 +1032,7 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
           )}
         </div>
 
-        {/* SEZIONE 3: Farmaci e Terapie a Scuola (FACOLTATIVA CON SWITCH) */}
+        {/* SEZIONE 3: Farmaci */}
         <div className={`rounded-2xl border transition-all p-6 ${hasMedications ? 'bg-white border-indigo-300 shadow-sm' : 'bg-slate-50/70 border-slate-200'}`}>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
             <div className="flex items-center gap-2.5">
@@ -1114,7 +1094,6 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
                 </div>
               )}
 
-              {/* Add Med box */}
               <div className="bg-indigo-50/30 p-4 rounded-xl border border-indigo-200 space-y-3">
                 <span className="text-xs font-bold text-slate-700 flex items-center gap-1">
                   <Plus className="w-4 h-4 text-indigo-600" /> Inserisci farmaco prescritto
@@ -1184,7 +1163,7 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
           )}
         </div>
 
-        {/* SEZIONE 4: Deleghe di Uscita (FACOLTATIVA CON SWITCH) */}
+        {/* SEZIONE 4: Deleghe di Uscita */}
         <div className={`rounded-2xl border transition-all p-6 ${hasDelegates ? 'bg-white border-emerald-300 shadow-sm' : 'bg-slate-50/70 border-slate-200'}`}>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
             <div className="flex items-center gap-2.5">
@@ -1287,7 +1266,7 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
                         Numero Carta d'Identità *
                       </label>
                       <div className="relative">
-                        <IdCard className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
+                        <CreditCard className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
                         <input
                           type="text"
                           required
@@ -1374,7 +1353,7 @@ function ParentSubmissionView({ onFormSubmit, campuses, classes }) {
 }
 
 /* =========================================================================
-   TEACHER DASHBOARD VIEW (Consultazione con Badge e Filtri Intelligenti)
+   TEACHER DASHBOARD VIEW
    ========================================================================= */
 function TeacherDashboardView({
   teacherAuth,
@@ -1400,7 +1379,6 @@ function TeacherDashboardView({
 
   return (
     <div className="space-y-6">
-      {/* Top Header */}
       <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
@@ -1440,7 +1418,6 @@ function TeacherDashboardView({
         </div>
       </div>
 
-      {/* KPI Counters */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
           <div className="p-3 bg-blue-50 text-blue-700 rounded-xl">
@@ -1473,7 +1450,6 @@ function TeacherDashboardView({
         </div>
       </div>
 
-      {/* Filters Bar */}
       <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <div className="relative">
@@ -1526,14 +1502,12 @@ function TeacherDashboardView({
         </div>
       </div>
 
-      {/* QUICK PICKUP / BELL TIME MODE */}
       {isPickupQuickMode ? (
         <QuickPickupView
           students={students}
           onOpenStudentDetail={onOpenStudentDetail}
         />
       ) : (
-        /* STANDARD LIST VIEW */
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
             <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
@@ -1583,7 +1557,6 @@ function TeacherDashboardView({
                       </div>
                     </div>
 
-                    {/* Dynamic Status Badges */}
                     <div className="flex flex-wrap items-center gap-2">
                       {isOnlyDelegates && (
                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
@@ -1637,7 +1610,7 @@ function TeacherDashboardView({
         </div>
       )}
 
-      {/* Print Table for School Staff */}
+      {/* Versione per la stampa */}
       <div className="hidden print:block print:p-4 text-slate-900 bg-white">
         <div className="border-b-2 border-black pb-3 mb-4 flex justify-between items-center">
           <div>
@@ -1705,7 +1678,7 @@ function TeacherDashboardView({
 }
 
 /* =========================================================================
-   QUICK PICKUP MODE & MODAL (Invariati con compatibilità per liste vuote)
+   QUICK PICKUP VIEW & MODAL
    ========================================================================= */
 function QuickPickupView({ students, onOpenStudentDetail }) {
   const [filterQuery, setFilterQuery] = useState("");
